@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тестовое Ламода — доставка с увеличенным периодом примерки</title>
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --surface: #fff;
+      --text: #1a1a1a;
+      --text-secondary: #555;
+      --text-muted: #888;
+      --border: #eee;
+      --border-strong: #ddd;
+
+      --green: #22c55e;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+      --green-text: #15803d;
+
+      --amber: #f59e0b;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+      --amber-text: #b45309;
+
+      --blue: #0369a1;
+      --blue-bg: #f0f9ff;
+      --blue-border: #bae6fd;
+      --blue-text: #0369a1;
+
+      --gray: #94a3b8;
+      --gray-bg: #f1f5f9;
+      --gray-text: #64748b;
+
+      --red-bg: #fef2f2;
+      --red-border: #fecaca;
+      --red-text: #dc2626;
+    }
+
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      background: #f4f4f4;
+      color: #1a1a1a;
+      line-height: 1.65;
+    }
+
+    code {
+      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, monospace;
+      font-size: 0.88em;
+      padding: 0.15em 0.45em;
+      border-radius: 4px;
+      background: #EEF2F7;
+      color: #1a1a1a;
+    }
+
+    a { color: #0369a1; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Sticky nav */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .site-nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 48px;
+      overflow-x: auto;
+    }
+
+    .nav-author {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-right: auto;
+      white-space: nowrap;
+    }
+
+    .site-nav a {
+      color: #555;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      padding: 4px 0;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .site-nav a:hover { color: #1a1a1a; text-decoration: none; }
+    .site-nav a.active { color: #1a1a1a; font-weight: 700; border-bottom: 2px solid #111; }
+
+    /* Hero */
+    .hero {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 48px 0 40px;
+    }
+
+    .hero-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 16px;
+      line-height: 1.2;
+    }
+
+    .hero .lead {
+      font-size: 15px;
+      color: #333;
+      margin-top: 10px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .hero-badges {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge.discovery { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+    .hero-badge.delivery  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .hero-badge.ab        { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+
+    /* Layout */
+    .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+    section {
+      padding: 56px 0 48px;
+      scroll-margin-top: 72px;
+      border-top: 1px solid #eee;
+    }
+
+    section:first-child { border-top: none; }
+
+    .section-badge {
+      background: #111;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    section h2 { font-size: 1.5rem; font-weight: 700; margin: 0 0 20px; color: #1a1a1a; }
+    section h3 { font-size: 1.05rem; font-weight: 700; margin: 44px 0 12px; color: #1a1a1a; }
+
+    .card, .risk-card, .mvp-card, .flow-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #eee;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+
+    .card { padding: 20px 22px; }
+
+    .callout {
+      border-left: 3px solid #0369a1;
+      background: #f0f9ff;
+      color: #1a1a1a;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 24px 0;
+      font-size: 0.95rem;
+    }
+
+    .callout.warning { background: #fffbeb; border-left-color: #f59e0b; }
+    .callout.success { background: #f0fdf4; border-left-color: #22c55e; }
+    .callout strong { color: #1a1a1a; }
+
+    /* Flow cards */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) { .flow-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .flow-grid { grid-template-columns: 1fr; } }
+
+    .flow-card {
+      position: relative;
+      padding-top: 36px;
+    }
+
+    .flow-card::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #0369a1;
+    }
+
+    .flow-card h4, .risk-card h4, .mvp-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+      margin-top: 0;
+    }
+
+    .flow-card p { margin: 0; font-size: 0.9375rem; color: #555; line-height: 1.55; }
+
+    .courier-list { margin: 12px 0 0; padding-left: 1.2em; color: #555; }
+    .courier-list li { margin-bottom: 8px; }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 16px 0;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+    th {
+      background: #f0f0f0;
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 2px solid #ddd;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; font-size: 13px; line-height: 1.5; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9f9f9; }
+
+    /* Rollback severity */
+    tr.rb-warn td.severity-cell {
+      border-left: 6px solid #CA8A04;
+      background: rgba(234, 179, 8, 0.22);
+      font-weight: 600;
+      color: #713F12;
+    }
+    tr.rb-orange td.severity-cell {
+      border-left: 6px solid #EA580C;
+      background: rgba(249, 115, 22, 0.2);
+      font-weight: 600;
+      color: #9A3412;
+    }
+    tr.rb-critical td.severity-cell {
+      border-left: 6px solid #DC2626;
+      background: rgba(220, 38, 38, 0.14);
+      font-weight: 700;
+      color: #991B1B;
+    }
+
+    /* Badges */
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 12px; letter-spacing: 0.04em; }
+    .badge.green  { background: #dcfce7; color: #16a34a; }
+    .badge.amber  { background: #fef9c3; color: #a16207; }
+    .badge.orange { background: #ffedd5; color: #c2410c; }
+    .badge.red    { background: #fee2e2; color: #dc2626; }
+    .badge.gray   { background: #f1f5f9; color: #64748b; }
+    .badge.blue   { background: #dbeafe; color: #1d4ed8; }
+
+    /* Risk cards */
+    .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+    @media (max-width: 768px) { .risk-grid { grid-template-columns: 1fr; } }
+
+    .risk-card { border-top: 4px solid #f59e0b; }
+    .risk-card p { margin: 0 0 8px; font-size: 0.9rem; color: #555; }
+    .risk-card .mit {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #eee;
+      font-size: 0.88rem;
+      color: #1a1a1a;
+    }
+    .risk-card .mit::before { content: 'Митигация: '; font-weight: 700; color: #22c55e; }
+
+    /* MVP */
+    .mvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    @media (max-width: 768px) { .mvp-grid { grid-template-columns: 1fr; } }
+
+    .mvp-card ul { margin: 0; padding: 0; list-style: none; }
+    .mvp-card li {
+      padding: 8px 0 8px 28px;
+      position: relative;
+      font-size: 0.92rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .mvp-card li:last-child { border-bottom: none; }
+    .mvp-in li::before { content: '✓'; position: absolute; left: 0; color: #22c55e; font-weight: 700; }
+    .mvp-out li::before { content: '✕'; position: absolute; left: 0; color: #9CA3AF; font-weight: 700; }
+
+    .text-muted { color: #666; font-size: 0.9375rem; }
+
+    /* Idea blocks */
+    .idea-block { border-left: 3px solid #d1d5db; padding-left: 20px; margin-bottom: 36px; }
+    .idea-block h4 { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .idea-block > p { margin: 0 0 0.65em; color: #1a1a1a; font-size: 0.9375rem; line-height: 1.6; }
+    .idea-block > p:last-child { margin-bottom: 0; }
+    .idea-block ul { margin: 8px 0; padding-left: 1.2em; color: #555; font-size: 0.9375rem; line-height: 1.55; }
+
+    footer {
+      padding: 40px 20px 56px;
+      text-align: center;
+      color: #555;
+      font-size: 0.9rem;
+      border-top: 1px solid #eee;
+      background: #fff;
+    }
+
+    footer strong { color: #1a1a1a; }
+
+    /* Мокапы — flow diagram */
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 24px 0 8px;
+    }
+
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 100px;
+      gap: 8px;
+    }
+
+    .flow-step--accent .flow-icon {
+      background: #fffbeb;
+      border-color: #fde68a;
+      box-shadow: 0 0 0 3px #fef9c3;
+    }
+
+    .flow-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      border: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .flow-label { font-size: 12px; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
+    .flow-label span { font-size: 11px; font-weight: 400; color: #888; }
+    .flow-arrow { font-size: 20px; color: #ccc; flex-shrink: 0; padding: 0 4px; margin-bottom: 20px; }
+
+    .flow-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    @media (max-width: 768px) { .flow-notes { grid-template-columns: 1fr; } .flow-step { min-width: 72px; } .flow-icon { width: 44px; height: 44px; font-size: 18px; } }
+
+    .flow-note {
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      background: #f9f9f9;
+    }
+    .flow-note--green  { background: #f0fdf4; border-color: #bbf7d0; }
+    .flow-note--blue   { background: #f0f9ff; border-color: #bae6fd; }
+    .flow-note--amber  { background: #fffbeb; border-color: #fde68a; }
+    .flow-note strong  { display: block; margin-bottom: 2px; font-size: 12px; }
+
+    /* Phone frame */
+    .mockup-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+    .phone-frame {
+      width: 260px;
+      background: #1a1a1a;
+      border-radius: 36px;
+      padding: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .phone-screen {
+      background: #fff;
+      border-radius: 28px;
+      overflow: hidden;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-statusbar { display: flex; justify-content: space-between; padding: 8px 16px 4px; font-size: 10px; font-weight: 600; color: #1a1a1a; background: #fff; }
+    .phone-header { display: flex; align-items: center; gap: 8px; padding: 4px 16px 8px; border-bottom: 1px solid #f0f0f0; }
+    .phone-back { font-size: 20px; color: #555; cursor: default; }
+    .phone-title { font-size: 15px; font-weight: 700; }
+
+    .phone-order-info { padding: 12px 16px 8px; background: #f8f8f8; }
+    .phone-order-tag  { font-size: 11px; color: #888; }
+    .phone-order-items { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+    .phone-items { flex: 1; padding: 8px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .phone-item {
+      font-size: 11px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.4;
+    }
+
+    .phone-hold-notice { font-size: 10px; color: #0369a1; background: #f0f9ff; border-top: 1px solid #bae6fd; padding: 8px 16px; text-align: center; }
+
+    .phone-cta { padding: 10px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+    .phone-btn { background: #1a1a1a; color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 700; width: 100%; cursor: default; }
+    .phone-btn-hint { font-size: 10px; color: #888; text-align: center; }
+
+    .mockup-caption { font-size: 12px; color: #888; text-align: center; max-width: 260px; line-height: 1.5; }
+
+    /* Mockups grid */
+    .mockups-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; justify-items: center; margin-top: 16px; }
+    @media (max-width: 600px) { .mockups-grid { grid-template-columns: 1fr; } }
+
+    .mockup-label { font-size: 11px; font-weight: 700; color: #555; text-align: center; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .courier-route { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 0; }
+    .courier-stop { display: flex; gap: 10px; padding-bottom: 14px; position: relative; }
+    .courier-stop:not(:last-child)::before { content: ''; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: #eee; }
+    .courier-stop-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; border: 2px solid #eee; background: #fff; }
+    .courier-stop-dot.done   { background: #22c55e; border-color: #22c55e; }
+    .courier-stop-dot.active { background: #f59e0b; border-color: #f59e0b; }
+    .courier-stop-dot.next   { background: #fff; border-color: #94a3b8; }
+    .courier-stop-info { display: flex; flex-direction: column; gap: 3px; }
+    .stop-addr  { font-size: 12px; font-weight: 600; }
+    .stop-sub   { font-size: 10px; color: #888; }
+    .done-label { font-size: 10px; color: #15803d; font-weight: 600; }
+
+    .stop-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; width: fit-content; }
+    .stop-badge.long-fitting { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+
+    .push-overlay { position: relative; z-index: 10; padding: 8px 10px 0; }
+    .push-card { background: rgba(245,245,245,0.97); border-radius: 14px; padding: 12px 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); backdrop-filter: blur(8px); }
+    .push-app   { font-size: 10px; color: #888; margin-bottom: 4px; }
+    .push-title { font-size: 13px; font-weight: 700; }
+    .push-body  { font-size: 11px; color: #555; margin-top: 2px; }
+    .push-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .push-btn { flex: 1; padding: 7px; border-radius: 8px; border: none; font-size: 11px; font-weight: 700; cursor: default; }
+    .push-btn--accept  { background: #1a1a1a; color: #fff; }
+    .push-btn--decline { background: #eee; color: #555; }
+
+    .courier-footer { padding: 8px 16px 12px; border-top: 1px solid #f0f0f0; }
+    .courier-earn { font-size: 11px; color: #888; }
+    .courier-earn strong { color: #1a1a1a; }
+
+    /* Checkout comparison */
+    .co-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-top: 24px; }
+    @media (max-width: 640px) { .co-compare { grid-template-columns: 1fr; } }
+    .co-col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .co-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 20px; }
+    .co-label.before { background: #fee2e2; color: #dc2626; }
+    .co-label.after  { background: #dcfce7; color: #16a34a; }
+
+    .co-phone { width: 240px; background: #1a1a1a; border-radius: 34px; padding: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+    .co-phone.new { background: #111; }
+    .co-phone::before { content: ''; display: block; width: 48px; height: 5px; background: #333; border-radius: 3px; margin: 0 auto 7px; }
+    .co-screen { background: #fff; border-radius: 26px; padding: 14px 12px 16px; overflow: hidden; }
+
+    .co-logo { font-size: 10px; font-weight: 900; letter-spacing: 2px; text-align: center; margin-bottom: 10px; color: #111; }
+    .co-section { font-size: 12px; font-weight: 700; color: #111; margin: 8px 0 6px; }
+    .co-tabs { display: flex; gap: 5px; margin-bottom: 8px; }
+    .co-tab { flex: 1; border-radius: 8px; padding: 7px 4px; text-align: center; font-size: 9px; font-weight: 700; }
+    .co-tab.active  { background: #111; color: #fff; }
+    .co-tab.passive { border: 1px solid #e0e0e0; color: #888; }
+
+    .co-row { display: flex; align-items: flex-start; gap: 7px; border: 1px solid #eee; border-radius: 8px; padding: 8px 9px; margin-bottom: 5px; background: #fff; cursor: default; }
+    .co-row.selected { border-color: #111; background: #fafafa; }
+    .co-row.selected.green { border-color: #22c55e; background: #f0fdf4; }
+
+    .co-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #ccc; flex-shrink: 0; margin-top: 2px; }
+    .co-dot.filled { background: #111; border-color: #111; }
+    .co-dot.green  { background: #22c55e; border-color: #22c55e; }
+
+    .co-row-body { flex: 1; }
+    .co-row-title { font-size: 10px; font-weight: 700; color: #111; line-height: 1.3; }
+    .co-row-sub   { font-size: 9px; color: #777; margin-top: 2px; line-height: 1.4; }
+    .co-row-badge { font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 3px; }
+    .co-row-badge.green { background: #dcfce7; color: #16a34a; }
+    .co-row-badge.blue  { background: #dbeafe; color: #1d4ed8; }
+    .co-row-badge.amber { background: #fef9c3; color: #a16207; }
+
+    .co-price { font-size: 9px; font-weight: 700; color: #111; white-space: nowrap; }
+    .co-price.extra { color: #555; font-weight: 600; }
+    .co-divider { border: none; border-top: 1px solid #f0f0f0; margin: 8px 0; }
+    .co-total-row { display: flex; justify-content: space-between; font-size: 9px; color: #555; margin-bottom: 3px; }
+    .co-total-row.bold { font-size: 11px; font-weight: 700; color: #111; }
+    .co-btn { background: #111; color: #fff; border-radius: 10px; padding: 10px; text-align: center; font-size: 11px; font-weight: 700; margin-top: 8px; cursor: default; }
+    .co-note { font-size: 9px; color: #888; text-align: center; margin-top: 6px; line-height: 1.4; }
+    .co-caption { font-size: 12px; color: #555; text-align: center; max-width: 240px; line-height: 1.5; }
+
+    /* JTBD cards */
+    .jtbd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    @media (max-width: 640px) { .jtbd-grid { grid-template-columns: 1fr; } }
+
+    .jtbd-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+
+    .jtbd-card .jtbd-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #0369a1;
+      margin-bottom: 6px;
+    }
+
+    .jtbd-card .jtbd-statement {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    /* Unknown / calculation inputs */
+    .dq-block {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+
+    .dq-block .dq-num {
+      font-size: 10px;
+      font-weight: 800;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .dq-block .dq-question {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .dq-block .dq-source {
+      font-size: 12px;
+      color: #555;
+    }
+
+    .dq-block .dq-source strong {
+      color: #1a1a1a;
+    }
+
+    /* Kill condition */
+    .kill-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 20px;
+    }
+
+    .kill-box .kill-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #dc2626;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    /* Hypotheses */
+    .hyp-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .hyp-card.priority {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .hyp-card .hyp-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: #888;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .hyp-card.priority .hyp-num {
+      color: #15803d;
+    }
+
+    .hyp-card .hyp-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .hyp-card .hyp-body {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .hyp-card .hyp-body p { margin: 0 0 6px; }
+    .hyp-card .hyp-body p:last-child { margin-bottom: 0; }
+
+    .hyp-priority-badge {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: #15803d;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+    }
+
+    /* Break-even formula */
+    .formula-box {
+      background: #f8f8f8;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      color: #1a1a1a;
+      margin: 16px 0;
+      line-height: 1.8;
+    }
+
+    .formula-box .formula-line {
+      margin-bottom: 6px;
+    }
+
+    .formula-box .formula-result {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd;
+      font-weight: 700;
+    }
+
+    @media print {
+      .site-nav, .hero-badges { display: none !important; }
+      html { scroll-behavior: auto; }
+      body { background: #fff; color: #000; font-size: 11pt; }
+      .hero { background: #fff !important; color: #000 !important; padding: 24px 0; }
+      .card, .flow-card, .risk-card, .mvp-card, .idea-block, .table-wrap { box-shadow: none !important; border: 1px solid #ccc; }
+      section { padding: 24px 0; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="site-nav" aria-label="Основная навигация">
+    <div class="site-nav-inner">
+      <span class="nav-author">Скринник М.А. · Тестовое Lamoda</span>
+      <a href="#context">Контекст</a>
+      <span style="color:#ccc;font-size:11px;white-space:nowrap;font-weight:600;">· Discovery ·</span>
+      <a href="#functionality">Функциональность</a>
+      <a href="#metrics">Метрики</a>
+      <a href="#research-risks">Риски ресерча</a>
+      <a href="#anti-metrics">Антиметрики</a>
+      <span style="color:#ccc;font-size:11px;white-space:nowrap;font-weight:600;">· Delivery ·</span>
+      <a href="#mvp">MVP</a>
+      <a href="#ab-design">A/B и раскатка</a>
+      <a href="#rollback">Откат</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Доставка с увеличенным периодом примерки</h1>
+      <p class="lead">Почему клиент не успевает примерить — и что с этим делать, не перекраивая логистику.</p>
+      <div class="hero-badges">
+        <span class="hero-badge discovery">Discovery</span>
+        <span class="hero-badge ab">A/B тест</span>
+        <span class="hero-badge delivery">Курьерский флоу</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ======================================================
+         00. КОНТЕКСТ
+    ======================================================= -->
+    <section id="context">
+      <span class="section-badge">00</span>
+      <h2>Контекст</h2>
+      <p class="text-muted">Точка отсчёта: что мы знаем до начала работы и почему эта задача в очереди.</p>
+
+      <div class="callout success" style="margin-bottom:24px;">
+        <strong>Гипотеза из задания:</strong> «Если дать клиенту больше времени на примерку, то удовлетворённость вырастет, а количество конфликтов снизится.»
+        <p style="margin:10px 0 0;font-size:0.9rem;color:#1a1a1a;">Это наша отправная точка. Discovery отвечает на вопрос: <strong>верна ли гипотеза в принципе, и для какого сегмента?</strong> A/B даёт количественный ответ.</p>
+      </div>
+
+      <div class="card">
+        <p><strong>Ситуация.</strong> У Lamoda курьерская доставка с опцией примерки — ключевое конкурентное преимущество перед маркетплейсами. Стандартный слот примерки — 15 минут. При крупных заказах (5+ позиций одежды) этого времени физически не хватает: 2–3 минуты на вещь × 6 позиций = 12–18 минут только на минимальную примерку, без учёта снятия верхней одежды, оценки посадки и принятия решения.</p>
+        <p>Следствие: клиент торопится, курьер создаёт давление, решение принимается в стрессе. Часть клиентов оставляет всё «на авось» — и возвращает потом. Часть отказывается от всего и уходит расстроенной. Оба исхода плохи: первый поднимает RRR, второй снижает NPS и LTV.</p>
+        <div class="callout">
+          <strong>Что мы не знаем на входе:</strong> нет данных о реальном размере проблемного сегмента, нет фактических таймстампов времени на точке, нет понимания желания платить за увеличенный период примерки. Всё это — зона Discovery.
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         ЧАСТЬ 1. DISCOVERY
+    ======================================================= -->
+
+    <!-- 01. ФУНКЦИОНАЛЬНОСТЬ -->
+    <section id="functionality">
+      <span class="section-badge">Часть 1 · Discovery</span>
+      <h2>Как будет выглядеть функциональность</h2>
+      <p class="text-muted">Описываем, что планируем к реализации — до того как принять окончательное решение. Discovery должен подтвердить, что это нужно делать именно так.</p>
+
+      <h3>JTBD: что делает клиент на самом деле</h3>
+      <p style="font-size:0.9375rem;color:#555;margin-bottom:16px;">Мы работаем над джобой <strong>«Не чувствовать, что трачу время курьера»</strong> — клиент не должен испытывать стресс в момент примерки. Остальные джобы влияют на выбор товара, эта — на качество опыта доставки.</p>
+
+      <div class="jtbd-grid">
+        <div class="jtbd-card">
+          <div class="jtbd-label">Job 1</div>
+          <div class="jtbd-statement">Убедиться, что вещи подходят мне</div>
+        </div>
+        <div class="jtbd-card">
+          <div class="jtbd-label">Job 2</div>
+          <div class="jtbd-statement">Примерить комплект целиком — куртка + брюки + обувь — и видеть результат</div>
+        </div>
+        <div class="jtbd-card">
+          <div class="jtbd-label">Job 3 — наш фокус</div>
+          <div class="jtbd-statement">Не чувствовать, что трачу время курьера — примерять с лёгкой совестью</div>
+        </div>
+      </div>
+
+      <h3>Планируемая функциональность</h3>
+
+      <div class="hyp-card priority">
+        <div class="hyp-priority-badge">ПЕРВАЯ</div>
+        <div class="hyp-num">Новый тип доставки — доставка с увеличенным периодом примерки</div>
+        <div class="hyp-title">Клиент выбирает при заказе, курьер видит в приложении</div>
+        <div class="hyp-body">
+          <p><strong>Как работает:</strong> при заказе на шаге выбора способа доставки появляется новый тип — «Доставка с увеличенным периодом примерки». Клиент выбирает этот тип и выбирает интервал доставки. В курьерском приложении у курьера отображается, что выбран именно этот тип — он заранее знает, что клиент будет примерять дольше. Никакого сюрприза в момент доставки.</p>
+          <p><strong>Кому показываем:</strong> только клиентам, у которых в корзине 5 и более товаров, требующих примерки — верхняя одежда, обувь, платья, костюмы, брюки, юбки. Общее количество товаров в корзине не важно: гель для душа, бельё, аксессуары в счёт не идут. Считаем именно товары под примерку.</p>
+          <p><strong>Почему так:</strong> платит только тот, кому нужно. Минимальный технический риск: новый тип доставки в карточке заказа + пометка в приложении курьера. Проверяет сразу два вопроса: (1) есть ли спрос; (2) покрывает ли надбавка затраты.</p>
+          <p><strong>Что проверяем:</strong> конверсия в этот тип доставки среди целевого сегмента. Если низкая — либо цена слишком высока, либо проблема не так остра, как казалось.</p>
+        </div>
+      </div>
+
+      <div class="callout warning" style="margin-top:28px;">
+        <strong>Важная оговорка: все цифры — примерные.</strong> Мы не знаем, сколько минут реально нужно на примерку. Порог «5+ позиций», «30 минут», надбавка «+X ₽» — гипотезы, а не факты.
+        <p style="margin:10px 0 0;font-size:0.9rem;color:#1a1a1a;">Логика работы: сначала аналитика по курьерскому приложению + количественный опрос клиентов → понимаем реальное время примерки → тестируем спрос и проверяем, как опция работает на практике → только после этого занимаемся тюнингом юнит-экономики и логистики.</p>
+      </div>
+
+      <h3>Экономика: что дешевле — курьер ждёт или два рейса</h3>
+
+      <div class="card">
+        <p style="margin-top:0;"><strong>Базовый параметр — CPS (cost per stop):</strong> переменные затраты на одно адресное посещение. Включает ГСМ / аккумулятор, время курьера (rate_wait в мин.), накладные. Конкретное значение берётся из внутренней аналитики логистики.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Параметр</th>
+                <th>Опция А — курьер ждёт</th>
+                <th>Опция Б — два рейса</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Точек маршрута</td>
+                <td>1 × CPS</td>
+                <td>2 × CPS (доставка + отдельный пикап)</td>
+              </tr>
+              <tr>
+                <td>Доп. затраты</td>
+                <td>T_wait × rate_wait</td>
+                <td>D_empty × rate_km (пустой пробег до точки)</td>
+              </tr>
+              <tr>
+                <td><strong>Итого</strong></td>
+                <td><strong>CPS + T_wait × rate_wait</strong></td>
+                <td><strong>2 × CPS + D_empty × rate_km</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin:8px 0 0;font-size:0.88rem;color:#555;">При типичных значениях Опция А выгоднее. Разрыв растёт с расстоянием между точками маршрута. Точные цифры — из логистической аналитики перед запуском.</p>
+      </div>
+
+      <h3>Break-even: при каком снижении возвратов надбавка окупается</h3>
+      <div class="card">
+        <p style="margin-top:0;">Если клиент платит надбавку <strong>P_surcharge</strong> за увеличенный период примерки, а курьер получает компенсацию за ожидание <strong>C_wait</strong>, то надбавка окупается, когда снижение возвратов даёт экономию, перекрывающую разницу.</p>
+
+        <div class="formula-box">
+          <div class="formula-line"><strong>Стоимость возврата (C_return):</strong> C_logistics_return + C_processing + C_markdown</div>
+          <div class="formula-line"><strong>Доп. затраты на слот (C_wait):</strong> T_extended × rate_wait  (например, 15 мин × N руб./мин)</div>
+          <div class="formula-line"><strong>Надбавка клиента (P_surcharge):</strong> то, что платит клиент на чекауте</div>
+          <div class="formula-line" style="margin-top:12px;"><strong>Break-even условие:</strong></div>
+          <div class="formula-line">&Delta;RRR × AOV × C_return &ge; C_wait − P_surcharge</div>
+          <div class="formula-result">
+            &Delta;RRR_min = (C_wait − P_surcharge) / (AOV × C_return)
+          </div>
+        </div>
+
+        <p><strong>Читать так:</strong> если надбавка полностью покрывает затраты на ожидание (P_surcharge = C_wait), то break-even достигается при любом положительном снижении RRR. Если надбавка ниже затрат — нужно снижение RRR минимум на &Delta;RRR_min процентных пунктов.</p>
+
+        <div class="callout success">
+          <strong>Практический вывод:</strong> при AOV заказа с примеркой ~8 000–12 000 ₽ и стоимости обработки возврата ~300–500 ₽ снижение RRR на 3–5 п.п. уже окупает разумную надбавку. Цифры для расчёта 3 (RRR в конфликтных доставках) — прямой input в эту формулу.
+        </div>
+      </div>
+
+      <h3>3 блока данных, которые нужны до принятия решений</h3>
+      <p style="font-size:0.9375rem;color:#555;margin-bottom:16px;">Наборы аналитических и операционных данных, которые должны быть собраны до запуска теста.</p>
+
+      <div class="dq-block">
+        <div class="dq-num">Цифры для расчёта 1</div>
+        <div class="dq-question">Фактическое время на точке → сегментация по числу позиций и типу товаров в заказе</div>
+        <div class="dq-source">
+          <strong>Источник:</strong> курьерское приложение — timestamp события «Выдал» (start таймера) и timestamp завершения точки.<br>
+          <strong>Цель:</strong> получить реальное распределение времени в разбивке по количеству позиций (1–2, 3–4, 5–6, 7+) и по категории товаров (верхняя одежда, обувь, трикотаж). Найти порог X, с которого 15 минут стабильно не хватает.<br>
+          <strong>Результат:</strong> обоснованный порог триггера оффера вместо экспертной оценки.
+        </div>
+      </div>
+
+      <div class="dq-block">
+        <div class="dq-num">Цифры для расчёта 2</div>
+        <div class="dq-question">CRM-теги + post-delivery опрос в проблемном сегменте → реальный масштаб неудовлетворённости</div>
+        <div class="dq-source">
+          <strong>Источник:</strong> CRM — обращения с тегами «курьер торопил», «не успел примерить», «конфликт при доставке» по заказам с 5+ позициями, требующими примерки. Post-delivery опрос — добавить вопрос «Хватило ли времени на примерку?» для этого же сегмента (~200 ответов для репрезентативной картины).<br>
+          <strong>Цель:</strong> перейти от «жалоб в поддержке» к реальной доле недовольных именно в проблемном сегменте. Понять: проблема в 8% или в 25% клиентов с 5+ позициями, требующими примерки?<br>
+          <strong>Результат:</strong> обоснование инвестиции в решение.
+        </div>
+      </div>
+
+      <div class="dq-block">
+        <div class="dq-num">Цифры для расчёта 3</div>
+        <div class="dq-question">Корреляция RRR с составом заказа и фактическим временем курьера на точке</div>
+        <div class="dq-source">
+          <strong>Источник:</strong> данные о возвратах, состав заказа, категории товаров и таймстампы курьерского приложения по фактическому времени пребывания на точке.<br>
+          <strong>Цель:</strong> проверить, есть ли корреляция между RRR, количеством товаров в заказе, типом товаров и фактическим временем примерки. Отдельно проверить: если курьер фактически находился на точке дольше 15 минут, становится ли RRR ниже по сравнению с заказами, где примерка уложилась в стандартный слот.<br>
+          <strong>Результат:</strong> понимание, связано ли снижение возвратов с дополнительным временем на примерку.<br>
+          <strong>Дополнительно по когорте с долгим временем на точке:</strong> если такие заказы уже есть в данных — смотрим метрики удовлетворённости. Если трекается NPS — сравниваем NPS по когортам (уложился в 15 мин vs вышел за). Если NPS нет — смотрим конверсию в повторную покупку с курьерской доставкой: клиент, который примерял без спешки, должен чаще возвращаться к этому формату.
+        </div>
+      </div>
+
+      <div class="kill-box">
+        <div class="kill-title">Условие отказа от гипотезы</div>
+        <p style="margin:0;font-size:0.9375rem;color:#333;">Если цифры для расчёта 1 покажут, что реальное время на точке при 5+ позициях укладывается в 15 минут в 80%+ случаев — проблемы нет, или она в другом. Тест запускать не нужно. Вместо этого — исследовать, почему клиенты жалуются: возможно, давление курьера, а не нехватка времени.</p>
+      </div>
+    </section>
+
+    <!-- 02. МЕТРИКИ ВЛИЯНИЯ -->
+    <section id="metrics">
+      <span class="section-badge">Discovery · 02</span>
+      <h2>На какие метрики хотим повлиять — и почему</h2>
+      <p class="text-muted">Фиксируем, что считаем успехом, до запуска теста. Логика влияния: убираем структурный дефицит времени у проблемного сегмента → клиент принимает решение без давления таймера.</p>
+
+      <div class="table-wrap">
+        <table class="table-primary-metrics">
+          <thead>
+            <tr>
+              <th>Метрика</th>
+              <th>Направление</th>
+              <th>Порог</th>
+              <th>Логика</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CSAT после примерки</td>
+              <td><span class="badge green">↑ растёт</span></td>
+              <td>+0.2 балла vs контроль</td>
+              <td>Меньше стресса при примерке → выше субъективная оценка</td>
+            </tr>
+            <tr>
+              <td>NPS курьерской доставки</td>
+              <td><span class="badge green">↑ растёт</span></td>
+              <td>+5 п.п. vs baseline</td>
+              <td>Убираем конфликт «курьер торопил»</td>
+            </tr>
+            <tr>
+              <td>RRR в группе B с опцией</td>
+              <td><span class="badge green">↓ падает</span></td>
+              <td>−3 п.п. vs контроль</td>
+              <td>Больше времени → взвешенное решение → меньше «беру на авось»</td>
+            </tr>
+            <tr>
+              <td>Конверсия в оффер</td>
+              <td><span class="badge blue">≥ 15%</span></td>
+              <td>&lt;10% = сигнал</td>
+              <td>Подтверждает реальный спрос на увеличенный период примерки</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- 03. РИСКИ РЕСЕРЧА -->
+    <section id="research-risks">
+      <span class="section-badge">Discovery · 03</span>
+      <h2>Риски и ограничения при выполнении ресерча</h2>
+      <p class="text-muted">Что может исказить данные или сделать исследование недостаточным для принятия решений.</p>
+
+      <div class="dq-block">
+        <div class="dq-num">Риск 1</div>
+        <div class="dq-question">Данные жалоб — не репрезентативная выборка</div>
+        <div class="dq-source">Оценка «7–10% доставок с примеркой» — косвенная, из жалоб в поддержку. Жалобы — это верхушка айсберга: пишут единицы, молчат большинство. Реальный размер проблемного сегмента может быть в 2–3 раза больше видимого.<br><br><strong>Митигация:</strong> post-delivery опрос (~200 ответов) для проблемного сегмента — прямой замер неудовлетворённости, не косвенный. Сравниваем с данными жалоб: если разрыв большой — обновляем размер сегмента перед запуском.</div>
+      </div>
+
+      <div class="dq-block">
+        <div class="dq-num">Риск 2</div>
+        <div class="dq-question">Порог «5+ позиций» — экспертная оценка без данных</div>
+        <div class="dq-source">«2–3 минуты на вещь» — экспертная оценка без данных. Фактическое время — разное для куртки и для футболки. Без таймстампов из курьерского приложения мы не знаем реальное распределение и не можем обосновать порог (5 айтемов? 7? 3?).<br><br><strong>Митигация:</strong> сначала получаем фактическое распределение времени на точке из курьерского приложения (Цифры для расчёта 1). Только потом определяем порог триггера оффера.</div>
+      </div>
+
+      <div class="dq-block">
+        <div class="dq-num">Риск 3</div>
+        <div class="dq-question">Неизвестно желание платить за увеличенный период примерки</div>
+        <div class="dq-source">Нет данных о готовности платить. Если надбавка слишком высокая — блокирует конверсию на чекауте. Если слишком низкая — не покрывает стоимость ожидания курьера. Без данных любой тариф — угадывание.<br><br><strong>Митигация:</strong> A/B тест с несколькими тарифами (например, 99 ₽ vs 149 ₽ в разных когортах) или последовательное тестирование тарифов. Мониторинг CVR на шаге выбора доставки как ранний сигнал ценового барьера.</div>
+      </div>
+    </section>
+
+    <!-- 04. АНТИМЕТРИКИ -->
+    <section id="anti-metrics">
+      <span class="section-badge">Discovery · 04</span>
+      <h2>Какие метрики можем ухудшить</h2>
+      <p class="text-muted">Метрики, которые держим под контролем — рост этих показателей сигнализирует, что фича вредит системе.</p>
+
+      <div class="table-wrap">
+        <table class="table-primary-metrics">
+          <thead>
+            <tr>
+              <th>Метрика</th>
+              <th>Статус</th>
+              <th>Порог тревоги</th>
+              <th>Логика</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OTD (on-time delivery)</td>
+              <td><span class="badge amber">→ под контролем</span></td>
+              <td>−3 п.п. vs контроль = пауза</td>
+              <td>Курьер задерживается на точке → опаздывает на следующие → страдают клиенты без расширенного слота</td>
+            </tr>
+            <tr>
+              <td>CPO (cost per order)</td>
+              <td><span class="badge amber">→ под контролем</span></td>
+              <td>+15% vs контроль = пересмотр</td>
+              <td>Время ожидания стоит денег. Надбавка должна покрывать оверхед, иначе экономика не сходится</td>
+            </tr>
+            <tr>
+              <td>NPS курьерской доставки</td>
+              <td><span class="badge amber">→ под контролем</span></td>
+              <td>−8 п.п. vs baseline = интервью</td>
+              <td>Если курьеры недовольны условиями слота — они торопят клиента, и фича работает наоборот</td>
+            </tr>
+            <tr>
+              <td>Конверсия в оплату</td>
+              <td><span class="badge amber">→ мониторинг</span></td>
+              <td>&gt;30% видевших опцию уходят</td>
+              <td>Ценовой барьер. Не триггер отката — триггер пересмотра тарифа</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         ЧАСТЬ 2. DELIVERY
+    ======================================================= -->
+
+    <!-- 05. MVP -->
+    <section id="mvp">
+      <span class="section-badge">Часть 2 · Delivery</span>
+      <h2>MVP фичи</h2>
+      <p class="text-muted">Минимальный набор функциональности для проверки гипотезы. Цель: убедиться, что платный увеличенный период примерки востребован и не ломает экономику маршрута — без перестройки логистического движка.</p>
+
+      <div class="mvp-grid">
+        <div class="card mvp-card mvp-in">
+          <h4>Входит в MVP</h4>
+          <ul>
+            <li>Опция «Доставка с долгой примеркой» на шаге выбора доставки при 5+ позициях</li>
+            <li>Надбавка к стоимости доставки (+X ₽)</li>
+            <li>Пометка в маршрутном листе курьера с ETA следующей точки</li>
+            <li>Событие выбора и фактического времени ожидания в аналитике</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:24px;">
+        <strong>Почему именно так:</strong> авто-пересчёт маршрута — тяжёлый бэкенд. Для MVP достаточно ответить: выбирают ли клиенты опцию и держатся ли они в рамках слота. При успехе — инвестиции в автоматизацию.
+      </div>
+
+      <h3>Флоу: как выглядит увеличенный период примерки на практике</h3>
+      <div class="flow-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="flow-card" data-step="Шаг 1">
+          <h4>Клиент на чекауте</h4>
+          <p>При 5+ позициях одежды на шаге выбора доставки появляется новый тип — «Доставка с увеличенным периодом примерки». Клиент выбирает его и выбирает интервал доставки.</p>
+        </div>
+        <div class="flow-card" data-step="Шаг 2">
+          <h4>Курьер в маршрутном листе</h4>
+          <p>Пометка «Долгая примерка · 30 мин» и скорректированное ETA следующей точки. Курьер знает заранее, сюрприза нет.</p>
+        </div>
+        <div class="flow-card" data-step="Шаг 3">
+          <h4>«Выдал» → таймер старт</h4>
+          <p>Курьер нажимает существующую кнопку «Выдал». Новой кнопки нет — переиспользуем флоу.</p>
+        </div>
+      </div>
+
+      <h3>Мокап: чекаут — до и после</h3>
+      <div class="co-compare">
+        <div class="co-col">
+          <span class="co-label before">До — стандартный чекаут</span>
+          <div class="co-phone">
+            <div class="co-screen">
+              <div class="co-logo">LAMODA</div>
+              <div class="co-section">Способ доставки</div>
+              <div class="co-row selected">
+                <div class="co-dot filled"></div>
+                <div class="co-row-body">
+                  <div class="co-row-title">Курьерская доставка</div>
+                  <div class="co-row-sub">Стандарт · 15 мин примерки</div>
+                </div>
+                <div class="co-price">290 ₽</div>
+              </div>
+              <div class="co-row">
+                <div class="co-dot"></div>
+                <div class="co-row-body">
+                  <div class="co-row-title">Постамат</div>
+                  <div class="co-row-sub">Ближайший · ул. Ленина, 5</div>
+                </div>
+                <div class="co-price">99 ₽</div>
+              </div>
+              <hr class="co-divider">
+              <div class="co-total-row"><span>Товары (6 позиций)</span><span>14 700 ₽</span></div>
+              <div class="co-total-row"><span>Доставка</span><span>290 ₽</span></div>
+              <div class="co-total-row bold"><span>Итого</span><span>14 990 ₽</span></div>
+              <div class="co-btn">Оформить заказ</div>
+            </div>
+          </div>
+          <div class="co-caption">Нет информации о времени примерки. Клиент не знает, что 15 минут не хватит.</div>
+        </div>
+
+        <div class="co-col">
+          <span class="co-label after">После — с опцией расширенной примерки</span>
+          <div class="co-phone new">
+            <div class="co-screen">
+              <div class="co-logo">LAMODA</div>
+              <div class="co-section">Способ доставки</div>
+              <div class="co-row">
+                <div class="co-dot"></div>
+                <div class="co-row-body">
+                  <div class="co-row-title">Стандарт</div>
+                  <div class="co-row-sub">Курьер · 15 мин примерки</div>
+                </div>
+                <div class="co-price">290 ₽</div>
+              </div>
+              <div class="co-row selected green">
+                <div class="co-dot green"></div>
+                <div class="co-row-body">
+                  <div class="co-row-title">Доставка с долгой примеркой</div>
+                  <div class="co-row-sub">Курьер ждёт 30 мин · у вас 6 вещей</div>
+                  <span class="co-row-badge green">Рекомендуем</span>
+                </div>
+                <div class="co-price">+149 ₽</div>
+              </div>
+              <hr class="co-divider">
+              <div class="co-total-row"><span>Товары (6 позиций)</span><span>14 700 ₽</span></div>
+              <div class="co-total-row"><span>Доставка</span><span>290 ₽</span></div>
+              <div class="co-total-row"><span>Доставка с долгой примеркой</span><span>149 ₽</span></div>
+              <div class="co-total-row bold"><span>Итого</span><span>15 139 ₽</span></div>
+              <div class="co-btn">Оформить заказ</div>
+            </div>
+          </div>
+          <div class="co-caption">Клиент видит опцию в нужный момент, понимает, за что платит.</div>
+        </div>
+      </div>
+
+      <h3>Мокап: курьерское приложение — событие «Выдал»</h3>
+      <div class="mockups-grid">
+        <div>
+          <div class="mockup-label">До нажатия «Выдал»</div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="phone-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="phone-header">
+                <span class="phone-back">←</span>
+                <span class="phone-title">Маршрут</span>
+              </div>
+              <div class="courier-route">
+                <div class="courier-stop">
+                  <div class="courier-stop-dot done"></div>
+                  <div class="courier-stop-info">
+                    <span class="stop-addr">ул. Садовая, 15, кв. 42</span>
+                    <span class="done-label">Выдано · 10:15</span>
+                  </div>
+                </div>
+                <div class="courier-stop">
+                  <div class="courier-stop-dot active"></div>
+                  <div class="courier-stop-info">
+                    <span class="stop-addr">пр. Мира, 88, кв. 7</span>
+                    <span class="stop-sub">Сейчас на точке</span>
+                    <span class="stop-badge long-fitting">Доставка с долгой примеркой · 30 мин</span>
+                  </div>
+                </div>
+                <div class="courier-stop">
+                  <div class="courier-stop-dot next"></div>
+                  <div class="courier-stop-info">
+                    <span class="stop-addr">ул. Лесная, 3, кв. 18</span>
+                    <span class="stop-sub">ETA: 11:35</span>
+                  </div>
+                </div>
+              </div>
+              <div class="courier-footer">
+                <div class="courier-earn">Текущая смена: <strong>1 847 ₽</strong> · 4 точки</div>
+              </div>
+              <div class="phone-cta">
+                <button class="phone-btn">Выдал</button>
+                <div class="phone-btn-hint">Старт таймера 30 мин примерки</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <h3>Риски MVP</h3>
+      <div class="risk-grid">
+        <article class="risk-card">
+          <h4>Падение OTD</h4>
+          <p>Курьер задерживается на точке → опаздывает на следующие → страдают клиенты без расширенного слота.</p>
+          <p><strong>Уровень:</strong> <span class="badge red">Критический</span></p>
+          <p class="mit">Мониторинг OTD с разбивкой по маршрутам с расширенными слотами. Триггер паузы: OTD упал на &gt;3 п.п. в тестовой группе.</p>
+        </article>
+        <article class="risk-card">
+          <h4>Загрязнение теста</h4>
+          <p>Часть курьеров торопит клиента, не выставляет статус — NPS падает не из-за фичи, а из-за неправильного исполнения.</p>
+          <p><strong>Уровень:</strong> <span class="badge red">Критический</span></p>
+          <p class="mit">Обязательный онбординг-экран до старта теста. Заказы с ожиданием &lt;5 мин при 30-минутном слоте — исключать из расчёта метрик.</p>
+        </article>
+        <article class="risk-card">
+          <h4>Падение заработка курьера</h4>
+          <p>Оплата per stop — увеличенный период примерки не добавляет точку. Дневной заработок падает, возможен отток.</p>
+          <p><strong>Уровень:</strong> <span class="badge orange">Высокий</span></p>
+          <p class="mit">Компенсация за время ожидания — отдельная строка выплаты, не теряется в тарифе. Онбординг-коммуникация: увеличенный период примерки = дополнительный заработок.</p>
+        </article>
+        <article class="risk-card">
+          <h4>Фрод — подмена товара</h4>
+          <p>Расширенное время увеличивает окно для подмены брендового товара.</p>
+          <p><strong>Уровень:</strong> <span class="badge red">Критический</span></p>
+          <p class="mit">Мониторинг претензий по качеству в заказах с расширенным слотом vs стандартным. Фото-фиксация при передаче товара курьером.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 06. A/B И РАСКАТКА -->
+    <section id="ab-design">
+      <span class="section-badge">Delivery · 06</span>
+      <h2>Раскатка на пользователей и A/B тест</h2>
+      <p class="text-muted">Новый тип доставки показывается только тем, у кого в корзине 5+ товаров, требующих примерки: верхняя одежда, обувь, костюмы, платья. Трусы, гели для душа, аксессуары — не считаются. A/B по <code>user_id</code> внутри этого сегмента.</p>
+
+      <div class="callout" style="margin-bottom:24px;">
+        <strong>Критерий показа опции:</strong> корзина содержит 5 и более товаров из категорий, требующих примерки (верхняя одежда, обувь, платья, костюмы, брюки, юбки). Товары без примерки — бельё, косметика, аксессуары — в счёт не идут. Именно такие корзины создают реальный конфликт нехватки времени.
+      </div>
+
+      <h3>Рандомизация и пилотная группа</h3>
+      <div class="card">
+        <div class="callout warning" style="margin-top:0;">
+          <strong>Рандомизировать по <code>user_id</code>, не по <code>order_id</code>.</strong> Если рандомизировать по <code>order_id</code> — один пользователь может попасть в обе группы. После опыта с новым типом доставки он меняет ожидания — следующие заказы в контрольной группе будут смещены. Это contamination.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Группа</th>
+                <th>Условие</th>
+                <th>Цель</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Control (A)</td>
+                <td>Корзина 5+ товаров под примерку — стандартная доставка, новый тип не показывается</td>
+                <td>Baseline по всем метрикам</td>
+              </tr>
+              <tr>
+                <td>Treatment (B)</td>
+                <td>Корзина 5+ товаров под примерку — на чекауте доступен новый тип доставки с увеличенным периодом</td>
+                <td>Измеряем спрос и эффект на CSAT, RRR, OTD</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3>Параметры теста</h3>
+      <ul class="courier-list" style="color:#1a1a1a;">
+        <li><strong>Продолжительность:</strong> минимум 3 недели — чтобы покрыть недельную сезонность и не снять результат в аномальный период</li>
+        <li><strong>Размер выборки и ожидаемый эффект:</strong> считаем после discovery — нужны baseline CSAT и объём трафика в сегменте 5+ товаров под примерку. Без этих данных любые цифры — угадывание</li>
+      </ul>
+
+      <div class="callout success" style="margin-top:24px;">
+        <strong>Критерий успеха:</strong> CSAT в группе B выше группы A, OTD не упал, CPO не вышел за допустимый порог — раскатка на весь сегмент.
+      </div>
+    </section>
+
+    <!-- 07. ОТКАТ -->
+    <section id="rollback">
+      <span class="section-badge">Delivery · 07</span>
+      <h2>Что откатим назад и по какому триггеру</h2>
+      <p class="text-muted">Разграничение важно: не каждый плохой показатель означает конец фичи. Ниже — что считать сигналом тревоги, что поводом для паузы, а что основанием для полного останова.</p>
+
+      <div class="callout warning" style="margin-bottom:20px;">
+        <strong>Конверсия в заказ — валидная метрика мониторинга, но не триггер отката.</strong> Если &gt;30% видевших опцию уходят — это ценовой сигнал, нужна ревизия тарифа, не откат фичи.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <colgroup>
+            <col style="width: 28%">
+            <col style="width: 16%">
+            <col style="width: 18%">
+            <col style="width: 38%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Метрика</th>
+              <th>Уровень</th>
+              <th>Порог</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="rb-warn">
+              <td>Конверсия в оплату</td>
+              <td class="severity-cell"><span class="badge amber">Жёлтый</span></td>
+              <td>&gt;30% видевших уходят без выбора</td>
+              <td>Ревизия тарифа — цена воспринимается как барьер</td>
+            </tr>
+            <tr class="rb-warn">
+              <td>Среднее время ожидания на точке</td>
+              <td class="severity-cell"><span class="badge amber">Жёлтый</span></td>
+              <td>+20% vs контроль за 7 дней</td>
+              <td>Аудит паттернов ожидания, поиск абьюза</td>
+            </tr>
+            <tr class="rb-orange">
+              <td>CPO</td>
+              <td class="severity-cell"><span class="badge orange">Оранжевый</span></td>
+              <td>+15% vs контроль</td>
+              <td>Пересмотр ценообразования надбавки</td>
+            </tr>
+            <tr class="rb-orange">
+              <td>OTD</td>
+              <td class="severity-cell"><span class="badge orange">Оранжевый</span></td>
+              <td>−3 п.п. vs контроль</td>
+              <td>Пауза теста, анализ влияния на маршруты</td>
+            </tr>
+            <tr class="rb-orange">
+              <td>NPS курьерской доставки</td>
+              <td class="severity-cell"><span class="badge orange">Оранжевый</span></td>
+              <td>−8 п.п. vs baseline</td>
+              <td>Интервью с курьерами, проверка компенсации</td>
+            </tr>
+            <tr class="rb-critical">
+              <td>CSAT после примерки (группа B)</td>
+              <td class="severity-cell"><span class="badge red">Красный</span></td>
+              <td>Ниже группы A через 2 недели</td>
+              <td>Остановить тест — фича не решает проблему, нужен пересмотр гипотезы</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <strong>Скринник Михаил · Тестовое задание Lamoda</strong>
+  </footer>
+
+  <script>
+    // Активация nav-ссылок при скролле
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.site-nav a[href^="#"]');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`.site-nav a[href="#${entry.target.id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  </script>
+
+</body>
+</html>
